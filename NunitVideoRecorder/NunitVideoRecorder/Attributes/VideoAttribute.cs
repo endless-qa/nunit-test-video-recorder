@@ -2,29 +2,28 @@
 using System;
 using NUnit.Framework.Interfaces;
 using System.Threading.Tasks;
+using System.Threading;
+using NUnit.Framework.Internal;
 
 namespace NunitVideoRecorder
 {
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class VideoAttribute : Attribute, ITestAction
     {
-
-        private string _OutputFileName;
+        private string OutputFileName;
         Recorder recorder;
 
-        public VideoAttribute(string name)
+        public VideoAttribute(string fileName)
         {
-            _OutputFileName = name;
-
+            OutputFileName = fileName;
         }
 
         public void BeforeTest(ITest test)
         {
-            recorder = new Recorder(_OutputFileName);
+            recorder = new Recorder(OutputFileName);
             recorder.SetConfiguration();
             ActivateVideoRecording();
         }
-
 
         public void AfterTest(ITest test)
         {
@@ -39,11 +38,9 @@ namespace NunitVideoRecorder
             }
         }
 
-
         async void ActivateVideoRecording()
         {
             await Task.Run(() => recorder.Start());
         }
-
     }
 }

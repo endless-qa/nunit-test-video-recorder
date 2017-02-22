@@ -12,15 +12,19 @@ using System.Drawing.Imaging;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows.Forms;
+using NunitVideoRecorder.Enums;
+using NunitVideoRecorder.Providers;
+using NUnit.Framework;
+using System.IO;
 
 namespace NunitVideoRecorder
 {
     class Recorder
     {
         private string name;
-        private string defaultPath = @"Y:\\";
-        int screenWidth = SystemInformation.VirtualScreen.Width;
-        int screenHeight = SystemInformation.VirtualScreen.Height;
+        private string defaultPath = TestContext.CurrentContext.TestDirectory;
+        private int screenWidth = SystemInformation.VirtualScreen.Width;
+        private int screenHeight = SystemInformation.VirtualScreen.Height;
 
         public Recorder(string name)
         {
@@ -28,71 +32,41 @@ namespace NunitVideoRecorder
         }
 
         AviWriter writer;
-
         byte[] frameData;
-
         IAviVideoStream stream;
-
-        private bool stopRecording = false;
-
-
+        private bool stopRecording = false; 
 
         public void SetConfiguration()
         {
-            writer = new AviWriter(defaultPath + name)
+            writer = new AviWriter(Path.Combine(defaultPath, name))
             {
-                FramesPerSecond = 30,
+                FramesPerSecond = 25,
                 EmitIndex1 = true
             };
 
-            // New way
-            //CodecProvider codecProvider = new CodecProvider();
-            //FourCC[] selectedCodec = codecProvider.GetOptimalCodecs();
-
-            // Old way
-            FourCC selectedCodec = KnownFourCCs.Codecs.X264;
-
-            // New way
-            //var encoder = EncoderProvider.GetEncoder(codecProvider);
-
-            // Old way
-            var encoder = new Mpeg4VideoEncoderVcm(screenWidth, screenHeight, 30, 0, 100, selectedCodec);
-            //var encoder = new MotionJpegVideoEncoderWpf(screenWidth, screenHeight, 100);
-
+            VideoConfigurator configurator = new VideoConfigurator(25, VideoQuality.HIGH);
+            var encoder = EncoderProvider.GetAvailableEncoder(configurator);            
 
             stream = writer.AddEncodingVideoStream(encoder, true, screenWidth, screenHeight);
-
-            stream.Width = screenWidth;
-            stream.Height = screenHeight;
-            //stream.Codec = KnownFourCCs.Codecs.Uncompressed;
-            //stream.BitsPerPixel = BitsPerPixel.Bpp32;
-
 
             frameData = new byte[stream.Width * stream.Height * 4];
         }
 
         public void Start()
         {
-
             while (!stopRecording)
             {
                 GetScreenshot(frameData);
-                stream.WriteFrame(true, // is key frame? (many codecs use concept of key frames, for others - all frames are keys)
-                                  frameData, // array with frame data
-                                  0, // starting index in the array
-                                  frameData.Length // length of the data
-                );
-
-            }
+                stream.WriteFrameAsync(true, frameData, 0, frameData.Length);
+            }            
         }
 
         public void Stop()
         {
             stopRecording = true;
+            Thread.Sleep(2000);
             writer.Close();
         }
-
-
 
         private void GetScreenshot(byte[] buffer)
         {
@@ -103,7 +77,6 @@ namespace NunitVideoRecorder
                 var bits = bitmap.LockBits(new Rectangle(0, 0, screenWidth, screenHeight), ImageLockMode.ReadOnly, PixelFormat.Format32bppRgb);
                 Marshal.Copy(bits.Scan0, buffer, 0, buffer.Length);
                 bitmap.UnlockBits(bits);
-
             }
         }
     }

@@ -10,18 +10,15 @@ namespace NunitVideoRecorder.Providers
 {
     class EncoderProvider
     {
-        static int screenWidth = SystemInformation.VirtualScreen.Width;
-        static int screenHeight = SystemInformation.VirtualScreen.Height;
-
-        public static IVideoEncoder GetEncoder(CodecProvider provider)
+        public static IVideoEncoder GetAvailableEncoder(VideoConfigurator cfg)
         {
-            if (provider.isMpeg4CodecsAvailable)
+            if (Mpeg4VideoEncoderVcm.GetAvailableCodecs().Length > 0)
             {
-                return new Mpeg4VideoEncoderVcm(screenWidth, screenHeight, 30, 0, 100, provider.GetOptimalCodecs());
+                return new Mpeg4VideoEncoderVcm(cfg.Width, cfg.Height, cfg.FramePerSecond, cfg.FrameCount, (int)cfg.Quality);
             }
             else
             {
-                return new MotionJpegVideoEncoderWpf(screenWidth, screenHeight, 100);
+                return new MotionJpegVideoEncoderWpf(cfg.Width, cfg.Height, (int)cfg.Quality);
             }
         }
     }

@@ -8,12 +8,11 @@ namespace NunitVideoRecorderExamples
     [TestFixture]
     public class AnnotationsExample
     {
-        [Video("output.avi")]
+        [Video("testsss.avi")]
         [Test]
         public void AnnotationWithCustomVideoName()
         {
-            Thread.Sleep(15000);
-            Assert.Pass();
+            Thread.Sleep(10000);
         }
     }
 }
