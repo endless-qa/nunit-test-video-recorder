@@ -1,6 +1,5 @@
 ﻿using NUnit.Framework;
 using NunitVideoRecorder;
-using System;
 using System.Threading;
 
 namespace NunitVideoRecorderExamples
@@ -8,16 +7,16 @@ namespace NunitVideoRecorderExamples
     [TestFixture]
     public class AttributesExample
     {
-        [Video("myTest")]
+        [Video(Name = "Suspicious test")]
         [Test]
-        public void AttributeWithCustomVideoName()
+        public void AttributeUsageWithCustomVideoName()
         {
             Thread.Sleep(10000);
         }
 
-        //[Video]
+        [Video]
         [Test]
-        public void AttributeWithDefaultVideoName()
+        public void AttributeUsageWithDefaultVideoName()
         {
             Thread.Sleep(10000);
         }

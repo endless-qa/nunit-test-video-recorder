@@ -2,30 +2,34 @@
 using System;
 using NUnit.Framework.Interfaces;
 using System.Threading.Tasks;
-using System.Threading;
-using NUnit.Framework.Internal;
 
 namespace NunitVideoRecorder
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class VideoAttribute : NUnitAttribute, ITestAction
+    public class VideoAttribute : Attribute, ITestAction
     {
-        private string OutputFileName;
-        Recorder recorder;
+        public string Name { get; set; }
+        private Recorder recorder;
 
-        //public VideoAttribute()
-        //{
-        //    OutputFileName = TestContext.CurrentContext.Test.Name;
-        //}
+        public VideoAttribute() { }
 
         public VideoAttribute(string fileName)
         {
-            OutputFileName = fileName;
+            Name = fileName;
         }
 
         public void BeforeTest(ITest test)
         {
-            recorder = new Recorder(OutputFileName);
+
+            if (Name == null)
+            {
+                recorder = new Recorder(test.Name);
+            }
+            else
+            {
+                recorder = new Recorder(Name);
+            }
+
             recorder.SetConfiguration();
             ActivateVideoRecording();
         }

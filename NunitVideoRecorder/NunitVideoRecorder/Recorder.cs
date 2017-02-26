@@ -28,7 +28,7 @@ namespace NunitVideoRecorder
 
         public Recorder(string name)
         {
-            FileName = name;
+            FileName = name + ".avi";
             Configurator = new VideoConfigurator();
             SelectedEncoder = EncoderProvider.GetAvailableEncoder(Configurator);
         }
