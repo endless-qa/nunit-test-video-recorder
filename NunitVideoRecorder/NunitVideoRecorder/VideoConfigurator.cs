@@ -7,7 +7,7 @@ namespace NunitVideoRecorder
     {
         public int Width { get; } = SystemInformation.VirtualScreen.Width;
         public int Height { get; } = SystemInformation.VirtualScreen.Height;
-        public int FramePerSecond { get; set; } = 25;
+        public int FramePerSecond { get; set; } = 30;
         public int FrameCount { get; } = 0;
         public VideoQuality Quality { get; set; } = VideoQuality.High;
        

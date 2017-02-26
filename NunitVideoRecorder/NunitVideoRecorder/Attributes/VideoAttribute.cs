@@ -2,6 +2,7 @@
 using System;
 using NUnit.Framework.Interfaces;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace NunitVideoRecorder
 {
@@ -9,7 +10,8 @@ namespace NunitVideoRecorder
     public class VideoAttribute : Attribute, ITestAction
     {
         public string Name { get; set; }
-        private Recorder recorder;
+        private Recorder TestRecorder;
+        private Task Recording;
 
         public VideoAttribute() { }
 
@@ -20,23 +22,25 @@ namespace NunitVideoRecorder
 
         public void BeforeTest(ITest test)
         {
-
             if (Name == null)
             {
-                recorder = new Recorder(test.Name);
+                TestRecorder = new Recorder(test.Name);
             }
             else
             {
-                recorder = new Recorder(Name);
-            }
+                TestRecorder = new Recorder(Name);
+            }            
 
-            recorder.SetConfiguration();
-            ActivateVideoRecording();
+            TestRecorder.SetConfiguration();
+
+            Recording = new Task(new Action(ActivateVideoRecording));
+            Recording.Start();
         }
 
         public void AfterTest(ITest test)
         {
-            recorder.Stop();
+            TestRecorder.Stop();
+            Recording.Wait();
         }
 
         public ActionTargets Targets
@@ -47,9 +51,9 @@ namespace NunitVideoRecorder
             }
         }
 
-        async void ActivateVideoRecording()
+        private void ActivateVideoRecording()
         {
-            await Task.Run(() => recorder.Start());
+            TestRecorder.Start();
         }
     }
 }

@@ -52,14 +52,14 @@ namespace NunitVideoRecorder
             {
                 GetSnapshot(FrameData);
                 VideoStream.WriteFrameAsync(true, FrameData, 0, FrameData.Length);
-            }            
+            }
+
+            FileWriter.Close();
         }
 
         public void Stop()
         {
             StopRecording = true;
-            //Thread.Sleep(2000);           // Debugging for correct closing all streams
-            FileWriter.Close();
         }
 
         private void GetSnapshot(byte[] buffer)
