@@ -50,7 +50,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="AnnotationsExample.cs" />
+    <Compile Include="AttributesExample.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

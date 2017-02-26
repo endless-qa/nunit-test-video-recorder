@@ -8,10 +8,15 @@ using NUnit.Framework.Internal;
 namespace NunitVideoRecorder
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class VideoAttribute : Attribute, ITestAction
+    public class VideoAttribute : NUnitAttribute, ITestAction
     {
         private string OutputFileName;
         Recorder recorder;
+
+        //public VideoAttribute()
+        //{
+        //    OutputFileName = TestContext.CurrentContext.Test.Name;
+        //}
 
         public VideoAttribute(string fileName)
         {

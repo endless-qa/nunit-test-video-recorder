@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SharpAvi;
-using SharpAvi.Codecs;
+﻿using SharpAvi.Codecs;
 using SharpAvi.Output;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Drawing.Imaging;
-using System.Diagnostics;
 using System.Threading;
 using System.Windows.Forms;
-using NunitVideoRecorder.Enums;
 using NunitVideoRecorder.Providers;
 using NUnit.Framework;
 using System.IO;
@@ -21,60 +13,62 @@ namespace NunitVideoRecorder
 {
     class Recorder
     {
-        private string name;
-        private string defaultPath = TestContext.CurrentContext.TestDirectory;
-        private int screenWidth = SystemInformation.VirtualScreen.Width;
-        private int screenHeight = SystemInformation.VirtualScreen.Height;
+        private string FileName;
+        private string DefaultOutputPath = TestContext.CurrentContext.TestDirectory;
+        private int ScreenWidth = SystemInformation.VirtualScreen.Width;
+        private int ScreenHeight = SystemInformation.VirtualScreen.Height;
+
+        private VideoConfigurator Configurator;
+        private IVideoEncoder SelectedEncoder;
+
+        AviWriter FileWriter;
+        byte[] FrameData;
+        IAviVideoStream VideoStream;
+        private bool StopRecording = false;
 
         public Recorder(string name)
         {
-            this.name = name;
+            FileName = name;
+            Configurator = new VideoConfigurator();
+            SelectedEncoder = EncoderProvider.GetAvailableEncoder(Configurator);
         }
-
-        AviWriter writer;
-        byte[] frameData;
-        IAviVideoStream stream;
-        private bool stopRecording = false; 
 
         public void SetConfiguration()
         {
-            writer = new AviWriter(Path.Combine(defaultPath, name))
+            FileWriter = new AviWriter(Path.Combine(DefaultOutputPath, FileName))
             {
-                FramesPerSecond = 25,
+                FramesPerSecond = Configurator.FramePerSecond,
                 EmitIndex1 = true
             };
 
-            VideoConfigurator configurator = new VideoConfigurator(25, VideoQuality.HIGH);
-            var encoder = EncoderProvider.GetAvailableEncoder(configurator);            
+            VideoStream = FileWriter.AddEncodingVideoStream(SelectedEncoder, true, ScreenWidth, ScreenHeight);
 
-            stream = writer.AddEncodingVideoStream(encoder, true, screenWidth, screenHeight);
-
-            frameData = new byte[stream.Width * stream.Height * 4];
+            FrameData = new byte[VideoStream.Width * VideoStream.Height * 4];
         }
 
         public void Start()
         {
-            while (!stopRecording)
+            while (!StopRecording)
             {
-                GetScreenshot(frameData);
-                stream.WriteFrameAsync(true, frameData, 0, frameData.Length);
+                GetSnapshot(FrameData);
+                VideoStream.WriteFrameAsync(true, FrameData, 0, FrameData.Length);
             }            
         }
 
         public void Stop()
         {
-            stopRecording = true;
-            Thread.Sleep(2000);
-            writer.Close();
+            StopRecording = true;
+            //Thread.Sleep(2000);           // Debugging for correct closing all streams
+            FileWriter.Close();
         }
 
-        private void GetScreenshot(byte[] buffer)
+        private void GetSnapshot(byte[] buffer)
         {
-            using (var bitmap = new Bitmap(screenWidth, screenHeight))
+            using (var bitmap = new Bitmap(ScreenWidth, ScreenHeight))
             using (var graphics = Graphics.FromImage(bitmap))
             {
-                graphics.CopyFromScreen(0, 0, 0, 0, new System.Drawing.Size(screenWidth, screenHeight));
-                var bits = bitmap.LockBits(new Rectangle(0, 0, screenWidth, screenHeight), ImageLockMode.ReadOnly, PixelFormat.Format32bppRgb);
+                graphics.CopyFromScreen(0, 0, 0, 0, new Size(ScreenWidth, ScreenHeight));
+                var bits = bitmap.LockBits(new Rectangle(0, 0, ScreenWidth, ScreenHeight), ImageLockMode.ReadOnly, PixelFormat.Format32bppRgb);
                 Marshal.Copy(bits.Scan0, buffer, 0, buffer.Length);
                 bitmap.UnlockBits(bits);
             }
