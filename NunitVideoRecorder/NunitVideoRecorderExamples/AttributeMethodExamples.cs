@@ -6,25 +6,25 @@ using System.Threading;
 namespace NunitVideoRecorderExamples
 {
     [TestFixture]
-    public class AttributesExample
+    public class AttributeMethodExamples
     {
-        [Video(Name = "Suspicious test")]
+        [Video(Name = "SuspiciousTest")]
         [Test]
-        public void AttributeUsageWithCustomVideoName()
+        public void TestWithCustomName_MethodAttribute()
         {
             Thread.Sleep(10000);
         }
 
         [Video]
         [Test]
-        public void AttributeUsageWithDefaultVideoName()
+        public void TestWithDefaultName_MethodAttribute()
         {
             Thread.Sleep(10000);
         }
 
         [Video(Name = "AlwaysFailedTest")]
         [Test]
-        public void AttributeUsageWithFailedTest()
+        public void FailedTestWithCustomName_MethodAttribute()
         {
             Thread.Sleep(10000);
             Assert.Fail("I don't like to pass!");
@@ -32,7 +32,7 @@ namespace NunitVideoRecorderExamples
 
         [Video]
         [Test]
-        public void AttributeUsageWhenTestCatchesExceptions()
+        public void TestExceptionWithDefaultName_MethodAttribute()
         {
             Thread.Sleep(10000);
             Assert.Throws<ArgumentException>(() => { throw new ArgumentException(); });
