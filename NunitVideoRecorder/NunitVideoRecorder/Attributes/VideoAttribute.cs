@@ -8,15 +8,15 @@ namespace NunitVideoRecorder
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class VideoAttribute : NUnitAttribute, ITestAction
     {
-        public string Name { get; set; }
-        private Recorder TestRecorder;
-        private Task Recording;
+        public string OutputFileName { get; set; }
+        private Recorder videoRecorder;
+        private Task recording;
 
         public VideoAttribute() { }
 
-        public VideoAttribute(string fileName)
+        public VideoAttribute(string testName)
         {
-            Name = fileName;
+            OutputFileName = testName;
         }
 
         public ActionTargets Targets
@@ -30,30 +30,31 @@ namespace NunitVideoRecorder
         public void BeforeTest(ITest test)
         {      
 
-            if (Name == null)
+            if (OutputFileName == null)
             {
-                TestRecorder = new Recorder(test.Name);
+                videoRecorder = new Recorder(test.Name);
             }
             else
             {
-                TestRecorder = new Recorder(Name);
+                videoRecorder = new Recorder(OutputFileName);
             }            
 
-            TestRecorder.SetConfiguration();
+            videoRecorder.SetConfiguration();
 
-            Recording = new Task(new Action(ActivateVideoRecording));
-            Recording.Start();            
+            recording = new Task(new Action(ActivateVideoRecording));
+            recording.Start();            
         }
 
         public void AfterTest(ITest test)
         {
-            TestRecorder.Stop();
-            Recording.Wait();
+            Console.WriteLine(TestContext.CurrentContext.Result.Outcome);
+            videoRecorder.Stop();
+            recording.Wait();
         }
 
         private void ActivateVideoRecording()
         {
-            TestRecorder.Start();
+            videoRecorder.Start();
         }
     }
 }

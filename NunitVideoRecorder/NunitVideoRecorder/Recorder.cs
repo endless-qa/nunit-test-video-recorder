@@ -13,62 +13,63 @@ namespace NunitVideoRecorder
 {
     class Recorder
     {
-        private string FileName;
-        private string DefaultOutputPath = TestContext.CurrentContext.TestDirectory;
-        private int ScreenWidth = SystemInformation.VirtualScreen.Width;
-        private int ScreenHeight = SystemInformation.VirtualScreen.Height;
+        private string outputFileName;
+        private string defaultOutputPath = TestContext.CurrentContext.TestDirectory;
+        private const string VIDEO_EXTENSION = ".avi";
+        private int screenWidth = SystemInformation.VirtualScreen.Width;
+        private int screenHeight = SystemInformation.VirtualScreen.Height;
 
-        private VideoConfigurator Configurator;
-        private IVideoEncoder SelectedEncoder;
+        private VideoConfigurator configurator;
+        private IVideoEncoder selectedEncoder;
 
-        AviWriter FileWriter;
-        byte[] FrameData;
-        IAviVideoStream VideoStream;
-        private bool StopRecording = false;
+        private AviWriter fileWriter;
+        private byte[] frameData;
+        private IAviVideoStream videoStream;
+        private bool stopRecording = false;
 
         public Recorder(string name)
         {
-            FileName = name + ".avi";
-            Configurator = new VideoConfigurator();
-            SelectedEncoder = EncoderProvider.GetAvailableEncoder(Configurator);
+            outputFileName = string.Concat(name, VIDEO_EXTENSION);
+            configurator = new VideoConfigurator();
+            selectedEncoder = EncoderProvider.GetAvailableEncoder(configurator);
         }
 
         public void SetConfiguration()
         {
-            FileWriter = new AviWriter(Path.Combine(DefaultOutputPath, FileName))
+            fileWriter = new AviWriter(Path.Combine(defaultOutputPath, outputFileName))
             {
-                FramesPerSecond = Configurator.FramePerSecond,
+                FramesPerSecond = configurator.FramePerSecond,
                 EmitIndex1 = true
             };
 
-            VideoStream = FileWriter.AddEncodingVideoStream(SelectedEncoder, true, ScreenWidth, ScreenHeight);
+            videoStream = fileWriter.AddEncodingVideoStream(selectedEncoder, true, screenWidth, screenHeight);
 
-            FrameData = new byte[VideoStream.Width * VideoStream.Height * 4];
+            frameData = new byte[videoStream.Width * videoStream.Height * 4];
         }
 
         public void Start()
         {
-            while (!StopRecording)
+            while (!stopRecording)
             {
-                GetSnapshot(FrameData);
-                VideoStream.WriteFrameAsync(true, FrameData, 0, FrameData.Length);
+                GetSnapshot(frameData);
+                videoStream.WriteFrameAsync(true, frameData, 0, frameData.Length);
             }
 
-            FileWriter.Close();
+            fileWriter.Close();
         }
 
         public void Stop()
         {
-            StopRecording = true;
+            stopRecording = true;
         }
 
         private void GetSnapshot(byte[] buffer)
         {
-            using (var bitmap = new Bitmap(ScreenWidth, ScreenHeight))
+            using (var bitmap = new Bitmap(screenWidth, screenHeight))
             using (var graphics = Graphics.FromImage(bitmap))
             {
-                graphics.CopyFromScreen(0, 0, 0, 0, new Size(ScreenWidth, ScreenHeight));
-                var bits = bitmap.LockBits(new Rectangle(0, 0, ScreenWidth, ScreenHeight), ImageLockMode.ReadOnly, PixelFormat.Format32bppRgb);
+                graphics.CopyFromScreen(0, 0, 0, 0, new Size(screenWidth, screenHeight));
+                var bits = bitmap.LockBits(new Rectangle(0, 0, screenWidth, screenHeight), ImageLockMode.ReadOnly, PixelFormat.Format32bppRgb);
                 Marshal.Copy(bits.Scan0, buffer, 0, buffer.Length);
                 bitmap.UnlockBits(bits);
             }

@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using NunitVideoRecorder;
 using NunitVideoRecorder.Attributes;
+using System;
 using System.Threading;
 
 namespace NunitVideoRecorderExamples
@@ -16,7 +17,7 @@ namespace NunitVideoRecorderExamples
             Assert.Pass();
         }
 
-        [Video(Name = "MyFavouriteTest")]
+        [Video(OutputFileName = "MyFavouriteTest")]
         [Test]
         public void TestWithCustomName_ClassAttribute()
         {

@@ -10,8 +10,9 @@ namespace NunitVideoRecorder.Attributes
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class WatchDogAttribute : NUnitAttribute, ITestAction
     {
-        private Recorder TestRecorder;
-        private Task Recording;
+        private Recorder videoRecorder;
+        private Task recording;
+        private const string VIDEO_ATTRIBUTE = "VideoAttribute";
 
         public WatchDogAttribute() { }
 
@@ -27,11 +28,11 @@ namespace NunitVideoRecorder.Attributes
         {
             if (!IsAttributeAppliedToTest(test))
             {
-                TestRecorder = new Recorder(test.Name);
-                TestRecorder.SetConfiguration();
+                videoRecorder = new Recorder(test.Name);
+                videoRecorder.SetConfiguration();
 
-                Recording = new Task(new Action(ActivateVideoRecording));
-                Recording.Start();
+                recording = new Task(new Action(ActivateVideoRecording));
+                recording.Start();
             }
         }
 
@@ -39,21 +40,21 @@ namespace NunitVideoRecorder.Attributes
         {
             if (!IsAttributeAppliedToTest(test))
             {
-                TestRecorder.Stop();
-                Recording.Wait(); 
-            }
+                videoRecorder.Stop();
+                recording.Wait(); 
+            }            
         }
 
         private void ActivateVideoRecording()
         {
-            TestRecorder.Start();
+            videoRecorder.Start();
         }
 
 
         private bool IsAttributeAppliedToTest(ITest test)
         {
-            var attributesSet = test.Method.MethodInfo.CustomAttributes;
-            return FindEntry(attributesSet, "VideoAttribute");
+            var testAttributesSet = test.Method.MethodInfo.CustomAttributes;
+            return FindEntry(testAttributesSet, VIDEO_ATTRIBUTE);
         }
 
         private bool FindEntry(IEnumerable<CustomAttributeData> attributesSet, string wantedAttribute)
