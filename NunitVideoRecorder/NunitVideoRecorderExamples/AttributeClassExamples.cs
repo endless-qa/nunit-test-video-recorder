@@ -17,7 +17,7 @@ namespace NunitVideoRecorderExamples
             Assert.Pass();
         }
 
-        [Video(OutputFileName = "MyFavouriteTest")]
+        [Video(Name = "MyFavouriteTest")]
         [Test]
         public void TestWithCustomName_ClassAttribute()
         {

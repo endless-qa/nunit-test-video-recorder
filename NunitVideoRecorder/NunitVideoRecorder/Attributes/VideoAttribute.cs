@@ -8,7 +8,7 @@ namespace NunitVideoRecorder
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class VideoAttribute : NUnitAttribute, ITestAction
     {
-        public string OutputFileName { get; set; }
+        public string Name { get; set; }
         private Recorder videoRecorder;
         private Task recording;
 
@@ -16,7 +16,7 @@ namespace NunitVideoRecorder
 
         public VideoAttribute(string testName)
         {
-            OutputFileName = testName;
+            Name = testName;
         }
 
         public ActionTargets Targets
@@ -30,13 +30,13 @@ namespace NunitVideoRecorder
         public void BeforeTest(ITest test)
         {      
 
-            if (OutputFileName == null)
+            if (string.IsNullOrWhiteSpace(Name))
             {
                 videoRecorder = new Recorder(test.Name);
             }
             else
             {
-                videoRecorder = new Recorder(OutputFileName);
+                videoRecorder = new Recorder(Name.Trim());
             }            
 
             videoRecorder.SetConfiguration();

@@ -8,7 +8,7 @@ namespace NunitVideoRecorderExamples
     [TestFixture]
     public class AttributeMethodExamples
     {
-        [Video(OutputFileName = "SuspiciousTest")]
+        [Video(Name = "SuspiciousTest")]
         [Test]
         public void TestWithCustomName_MethodAttribute()
         {
@@ -22,7 +22,7 @@ namespace NunitVideoRecorderExamples
             Thread.Sleep(10000);
         }
 
-        [Video(OutputFileName = "AlwaysFailedTest")]
+        [Video(Name = "AlwaysFailedTest")]
         [Test]
         public void FailedTestWithCustomName_MethodAttribute()
         {
