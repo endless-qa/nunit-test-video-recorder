@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using NUnit.Framework.Interfaces;
 using System.Reflection;
+using System.IO;
 
 namespace NunitVideoRecorder.Attributes
 {
@@ -12,9 +13,13 @@ namespace NunitVideoRecorder.Attributes
     {
         private Recorder videoRecorder;
         private Task recording;
-        private const string VIDEO_ATTRIBUTE = "VideoAttribute";
+        private const string WANTED_ATTRIBUTE = "VideoAttribute";
+        private bool saveFailedOnly;
 
-        public WatchDogAttribute() { }
+        public WatchDogAttribute(SaveInClass mode)
+        {
+            SetVideoSavingMode(mode);
+        }
 
         public ActionTargets Targets
         {
@@ -26,7 +31,7 @@ namespace NunitVideoRecorder.Attributes
 
         public void BeforeTest(ITest test)
         {
-            if (!IsAttributeAppliedToTest(test))
+            if (!IsVideoAttributeAppliedToTest(test))
             {
                 videoRecorder = new Recorder(test.Name);
                 videoRecorder.SetConfiguration();
@@ -38,11 +43,19 @@ namespace NunitVideoRecorder.Attributes
 
         public void AfterTest(ITest test)
         {
-            if (!IsAttributeAppliedToTest(test))
+            if (!IsVideoAttributeAppliedToTest(test))
             {
                 videoRecorder.Stop();
-                recording.Wait(); 
-            }            
+                recording.Wait();
+
+                if (saveFailedOnly)
+                {
+                    if (TestContext.CurrentContext.Result.Outcome == ResultState.Success)
+                    {
+                        DeleteRelatedVideo();
+                    }
+                }
+            }      
         }
 
         private void ActivateVideoRecording()
@@ -50,11 +63,10 @@ namespace NunitVideoRecorder.Attributes
             videoRecorder.Start();
         }
 
-
-        private bool IsAttributeAppliedToTest(ITest test)
+        private bool IsVideoAttributeAppliedToTest(ITest test)
         {
             var testAttributesSet = test.Method.MethodInfo.CustomAttributes;
-            return FindEntry(testAttributesSet, VIDEO_ATTRIBUTE);
+            return FindEntry(testAttributesSet, WANTED_ATTRIBUTE);
         }
 
         private bool FindEntry(IEnumerable<CustomAttributeData> attributesSet, string wantedAttribute)
@@ -69,6 +81,36 @@ namespace NunitVideoRecorder.Attributes
                 }
             }
             return isAttributeFound;
+        }
+
+        private void SetVideoSavingMode(SaveInClass mode)
+        {
+            switch (mode)
+            {
+                case SaveInClass.AllTests:
+                {
+                    saveFailedOnly = false;
+                    break;
+                }
+                case SaveInClass.FailedTestsOnly:
+                {
+                    saveFailedOnly = true;
+                    break;
+                }
+                default: throw new ArgumentException("Saving mode is not valid!");
+            }
+        }
+
+        private void DeleteRelatedVideo()
+        {
+            try
+            {
+                File.Delete(videoRecorder.GetOutputFile());
+            }
+            catch (IOException iox)
+            {
+                Console.WriteLine(iox.Message);
+            }
         }
     }
 }

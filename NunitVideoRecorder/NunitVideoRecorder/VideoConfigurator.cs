@@ -1,5 +1,4 @@
-﻿using NunitVideoRecorder.Enums;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 
 namespace NunitVideoRecorder
 {

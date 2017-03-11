@@ -1,4 +1,4 @@
-﻿namespace NunitVideoRecorder.Enums
+﻿namespace NunitVideoRecorder
 {
     public enum VideoQuality
     {

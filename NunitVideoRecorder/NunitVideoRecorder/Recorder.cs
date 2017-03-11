@@ -9,12 +9,17 @@ using NunitVideoRecorder.Providers;
 using NUnit.Framework;
 using System.IO;
 
+// TODO: Implement sorting video files by folders with class names
+// TODO: Add an option for custom output path, not TestDirectory only
+// TODO: Implement functionality for bringing Windows application window on top
+
 namespace NunitVideoRecorder
 {
     class Recorder
     {
         private string outputFileName;
-        private string defaultOutputPath = TestContext.CurrentContext.TestDirectory;
+        private string outputPath = TestContext.CurrentContext.TestDirectory;
+        private string fullPathToSavedVideo;
         private const string VIDEO_EXTENSION = ".avi";
         private int screenWidth = SystemInformation.VirtualScreen.Width;
         private int screenHeight = SystemInformation.VirtualScreen.Height;
@@ -30,13 +35,14 @@ namespace NunitVideoRecorder
         public Recorder(string name)
         {
             outputFileName = string.Concat(name, VIDEO_EXTENSION);
+            fullPathToSavedVideo = Path.Combine(outputPath, outputFileName);
             configurator = new VideoConfigurator();
             selectedEncoder = EncoderProvider.GetAvailableEncoder(configurator);
         }
 
         public void SetConfiguration()
         {
-            fileWriter = new AviWriter(Path.Combine(defaultOutputPath, outputFileName))
+            fileWriter = new AviWriter(fullPathToSavedVideo)
             {
                 FramesPerSecond = configurator.FramePerSecond,
                 EmitIndex1 = true
@@ -63,6 +69,11 @@ namespace NunitVideoRecorder
             stopRecording = true;
         }
 
+        public string GetOutputFile()
+        {
+            return fullPathToSavedVideo;
+        }
+
         private void GetSnapshot(byte[] buffer)
         {
             using (var bitmap = new Bitmap(screenWidth, screenHeight))
@@ -73,6 +84,6 @@ namespace NunitVideoRecorder
                 Marshal.Copy(bits.Scan0, buffer, 0, buffer.Length);
                 bitmap.UnlockBits(bits);
             }
-        }
+        }        
     }
 }

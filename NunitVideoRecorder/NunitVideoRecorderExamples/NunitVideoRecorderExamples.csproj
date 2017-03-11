@@ -51,8 +51,9 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="AttributeClassExamples.cs" />
-    <Compile Include="AttributeMethodExamples.cs" />
+    <Compile Include="ClassLevelAllTestsExamples.cs" />
+    <Compile Include="ClassLevelFailedTestsExamples.cs" />
+    <Compile Include="MethodLevelExamples.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -2,6 +2,7 @@
 using System;
 using NUnit.Framework.Interfaces;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace NunitVideoRecorder
 {
@@ -9,15 +10,13 @@ namespace NunitVideoRecorder
     public class VideoAttribute : NUnitAttribute, ITestAction
     {
         public string Name { get; set; }
+        public SaveMe Mode { get; set; } = SaveMe.Always;
+
+        private bool saveFailedOnly;
         private Recorder videoRecorder;
         private Task recording;
 
         public VideoAttribute() { }
-
-        public VideoAttribute(string testName)
-        {
-            Name = testName;
-        }
 
         public ActionTargets Targets
         {
@@ -28,7 +27,8 @@ namespace NunitVideoRecorder
         }
 
         public void BeforeTest(ITest test)
-        {      
+        {
+            SetVideoSavingMode(Mode);
 
             if (string.IsNullOrWhiteSpace(Name))
             {
@@ -47,14 +47,51 @@ namespace NunitVideoRecorder
 
         public void AfterTest(ITest test)
         {
-            Console.WriteLine(TestContext.CurrentContext.Result.Outcome);
             videoRecorder.Stop();
             recording.Wait();
+
+            if (saveFailedOnly)
+            {
+                if (TestContext.CurrentContext.Result.Outcome == ResultState.Success)
+                {
+                    DeleteRelatedVideo();
+                }
+            }
         }
 
         private void ActivateVideoRecording()
         {
             videoRecorder.Start();
+        }
+
+        private void SetVideoSavingMode(SaveMe mode)
+        {
+            switch (mode)
+            {
+                case SaveMe.Always:
+                {
+                    saveFailedOnly = false;
+                    break;
+                }
+                case SaveMe.OnlyWhenFailed:
+                {
+                    saveFailedOnly = true;
+                    break;
+                }
+                default: throw new ArgumentException("Saving mode is not valid!");
+            }
+        }
+
+        private void DeleteRelatedVideo()
+        {
+            try
+            {
+                File.Delete(videoRecorder.GetOutputFile());
+            }
+            catch (IOException iox)
+            {
+                Console.WriteLine(iox.Message);
+            }
         }
     }
 }
