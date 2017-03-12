@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using NunitVideoRecorder.Internal;
@@ -13,56 +12,30 @@ namespace NunitVideoRecorder
         public string Name { get; set; }
         public SaveMe Mode { get; set; } = SaveMe.Always;
 
-        private bool saveFailedOnly;
-        private Recorder videoRecorder;
-        private Task recording;
+        private bool _saveFailedOnly;
+        private Recorder _recording;
 
         public VideoAttribute() { }
 
-        public ActionTargets Targets
-        {
-            get
-            {
-                return ActionTargets.Test;
-            }
-        }
+        public ActionTargets Targets => ActionTargets.Test;
 
         public void BeforeTest(ITest test)
         {
             SetVideoSavingMode(Mode);
-
-            if (string.IsNullOrWhiteSpace(Name))
-            {
-                videoRecorder = new Recorder(test.Name);
-            }
-            else
-            {
-                videoRecorder = new Recorder(Name.Trim());
-            }            
-
-            videoRecorder.SetConfiguration();
-
-            recording = new Task(new Action(ActivateVideoRecording));
-            recording.Start();            
+            var testName = string.IsNullOrWhiteSpace(Name) ? test.Name : Name.Trim();
+            _recording = RecorderFactory.Instance.Create(testName);
+            _recording.Start();            
         }
 
         public void AfterTest(ITest test)
         {
-            videoRecorder.Stop();
-            recording.Wait();
+            _recording?.Stop();
 
-            if (saveFailedOnly)
-            {
-                if (TestContext.CurrentContext.Result.Outcome == ResultState.Success)
+            if (_saveFailedOnly
+                && Equals(TestContext.CurrentContext.Result.Outcome, ResultState.Success))
                 {
                     DeleteRelatedVideo();
                 }
-            }
-        }
-
-        private void ActivateVideoRecording()
-        {
-            videoRecorder.Start();
         }
 
         private void SetVideoSavingMode(SaveMe mode)
@@ -71,12 +44,12 @@ namespace NunitVideoRecorder
             {
                 case SaveMe.Always:
                 {
-                    saveFailedOnly = false;
+                    _saveFailedOnly = false;
                     break;
                 }
                 case SaveMe.OnlyWhenFailed:
                 {
-                    saveFailedOnly = true;
+                    _saveFailedOnly = true;
                     break;
                 }
                 default: throw new ArgumentException("Saving mode is not valid!");
@@ -87,7 +60,7 @@ namespace NunitVideoRecorder
         {
             try
             {
-                File.Delete(videoRecorder.GetOutputFile());
+                File.Delete(_recording.OutputFilePath);
             }
             catch (IOException iox)
             {

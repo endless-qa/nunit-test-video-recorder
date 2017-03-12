@@ -12,8 +12,7 @@ namespace NunitVideoRecorder
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class WatchDogAttribute : NUnitAttribute, ITestAction
     {
-        private Recorder videoRecorder;
-        private Task recording;
+        private Recorder recording;
         private const string WANTED_ATTRIBUTE = "VideoAttribute";
         private bool saveFailedOnly;
 
@@ -22,22 +21,13 @@ namespace NunitVideoRecorder
             SetVideoSavingMode(mode);
         }
 
-        public ActionTargets Targets
-        {
-            get
-            {
-                return ActionTargets.Test;
-            }
-        }
+        public ActionTargets Targets { get; } = ActionTargets.Test;
 
         public void BeforeTest(ITest test)
         {
             if (!IsVideoAttributeAppliedToTest(test))
             {
-                videoRecorder = new Recorder(test.Name);
-                videoRecorder.SetConfiguration();
-
-                recording = new Task(new Action(ActivateVideoRecording));
+                recording = RecorderFactory.Instance.Create(test.Name);
                 recording.Start();
             }
         }
@@ -46,22 +36,14 @@ namespace NunitVideoRecorder
         {
             if (!IsVideoAttributeAppliedToTest(test))
             {
-                videoRecorder.Stop();
-                recording.Wait();
+                recording.Stop();
 
-                if (saveFailedOnly)
-                {
-                    if (TestContext.CurrentContext.Result.Outcome == ResultState.Success)
+                if (saveFailedOnly &&
+                    Equals(TestContext.CurrentContext.Result.Outcome, ResultState.Success))
                     {
                         DeleteRelatedVideo();
                     }
-                }
             }      
-        }
-
-        private void ActivateVideoRecording()
-        {
-            videoRecorder.Start();
         }
 
         private bool IsVideoAttributeAppliedToTest(ITest test)
@@ -106,7 +88,7 @@ namespace NunitVideoRecorder
         {
             try
             {
-                File.Delete(videoRecorder.GetOutputFile());
+                File.Delete(recording.OutputFilePath);
             }
             catch (IOException iox)
             {
