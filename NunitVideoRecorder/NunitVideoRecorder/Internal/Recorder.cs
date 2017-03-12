@@ -1,9 +1,9 @@
-﻿using System.IO;
+﻿using System;
 using System.Drawing;
-using System.Windows.Forms;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
-using NUnit.Framework;
+using System.Threading;
+using System.Threading.Tasks;
 using SharpAvi.Codecs;
 using SharpAvi.Output;
 
@@ -14,72 +14,76 @@ using SharpAvi.Output;
 
 namespace NunitVideoRecorder.Internal
 {
-    class Recorder
+    public class Recorder
     {
-        private string outputFileName;
-        private string outputPath = TestContext.CurrentContext.TestDirectory;
-        private string fullPathToSavedVideo;
-        private const string VIDEO_EXTENSION = ".avi";
-        private int screenWidth = SystemInformation.VirtualScreen.Width;
-        private int screenHeight = SystemInformation.VirtualScreen.Height;
+        private readonly string _outputFilePath;
+        private readonly IVideoEncoder _selectedEncoder;
+        private readonly VideoConfigurator _configurator;
 
-        private VideoConfigurator configurator;
-        private IVideoEncoder selectedEncoder;
+        private AviWriter _fileWriter;
+        private byte[] _frameData;
+        private IAviVideoStream _videoStream;
 
-        private AviWriter fileWriter;
-        private byte[] frameData;
-        private IAviVideoStream videoStream;
-        private bool stopRecording = false;
+        private CancellationTokenSource _cts;
+        private Task _workTask;
 
-        public Recorder(string name)
+        public Recorder(string outputFilePath, IVideoEncoder videoEncoder, VideoConfigurator configurator)
         {
-            outputFileName = string.Concat(name, VIDEO_EXTENSION);
-            fullPathToSavedVideo = Path.Combine(outputPath, outputFileName);
-            configurator = new VideoConfigurator();
-            selectedEncoder = EncoderProvider.GetAvailableEncoder(configurator);
+            _outputFilePath = outputFilePath;
+            _selectedEncoder = videoEncoder;
+            _configurator = configurator;
         }
 
-        public void SetConfiguration()
-        {
-            fileWriter = new AviWriter(fullPathToSavedVideo)
-            {
-                FramesPerSecond = configurator.FramePerSecond,
-                EmitIndex1 = true
-            };
-
-            videoStream = fileWriter.AddEncodingVideoStream(selectedEncoder, true, screenWidth, screenHeight);
-
-            frameData = new byte[videoStream.Width * videoStream.Height * 4];
-        }
+        public string OutputFilePath => _outputFilePath;
 
         public void Start()
         {
-            while (!stopRecording)
+            _fileWriter = new AviWriter(_outputFilePath)
             {
-                GetSnapshot(frameData);
-                videoStream.WriteFrameAsync(true, frameData, 0, frameData.Length);
-            }
+                FramesPerSecond = _configurator.FramePerSecond,
+                EmitIndex1 = true
+            };
 
-            fileWriter.Close();
+            _videoStream = _fileWriter.AddEncodingVideoStream(_selectedEncoder, true, _configurator.Width, _configurator.Height);
+            _frameData = new byte[_videoStream.Width * _videoStream.Height * 4];
+            _cts = new CancellationTokenSource();
+
+            _workTask = Task.Run(async () =>
+            {
+                Task writeTask = Task.FromResult(true);
+                while (!_cts.IsCancellationRequested)
+                {
+                    GetSnapshot(_frameData);
+                    await writeTask;
+                    writeTask = _videoStream.WriteFrameAsync(true, _frameData, 0, _frameData.Length);
+                }
+                await writeTask;
+            });
         }
 
         public void Stop()
         {
-            stopRecording = true;
-        }
+            _cts.Cancel();
 
-        public string GetOutputFile()
-        {
-            return fullPathToSavedVideo;
+            try
+            {
+                _workTask.Wait();
+            }
+            catch (OperationCanceledException) { }
+            finally
+            {
+                _fileWriter.Close();
+            }
         }
 
         private void GetSnapshot(byte[] buffer)
         {
-            using (var bitmap = new Bitmap(screenWidth, screenHeight))
+            using (var bitmap = new Bitmap(_configurator.Width, _configurator.Height))
             using (var graphics = Graphics.FromImage(bitmap))
             {
-                graphics.CopyFromScreen(0, 0, 0, 0, new Size(screenWidth, screenHeight));
-                var bits = bitmap.LockBits(new Rectangle(0, 0, screenWidth, screenHeight), ImageLockMode.ReadOnly, PixelFormat.Format32bppRgb);
+                graphics.CopyFromScreen(0, 0, 0, 0, new Size(_configurator.Width, _configurator.Height));
+                var bits = bitmap.LockBits(new Rectangle(0, 0, _configurator.Width, 
+                    _configurator.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppRgb);
                 Marshal.Copy(bits.Scan0, buffer, 0, buffer.Length);
                 bitmap.UnlockBits(bits);
             }

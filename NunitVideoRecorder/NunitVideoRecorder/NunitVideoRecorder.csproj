@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Internal\RecorderFactory.cs" />
     <Compile Include="VideoAttribute.cs" />
     <Compile Include="WatchDogAttribute.cs" />
     <Compile Include="Internal\Enums\SaveInClass.cs" />
