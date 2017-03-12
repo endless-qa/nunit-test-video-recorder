@@ -1,8 +1,9 @@
-﻿using NUnit.Framework;
-using System;
-using NUnit.Framework.Interfaces;
-using System.Threading.Tasks;
+﻿using System;
 using System.IO;
+using System.Threading.Tasks;
+using NUnit.Framework;
+using NUnit.Framework.Interfaces;
+using NunitVideoRecorder.Internal;
 
 namespace NunitVideoRecorder
 {

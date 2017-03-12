@@ -1,19 +1,18 @@
-﻿using SharpAvi.Codecs;
-using SharpAvi.Output;
+﻿using System.IO;
 using System.Drawing;
-using System.Runtime.InteropServices;
-using System.Drawing.Imaging;
-using System.Threading;
 using System.Windows.Forms;
-using NunitVideoRecorder.Providers;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 using NUnit.Framework;
-using System.IO;
+using SharpAvi.Codecs;
+using SharpAvi.Output;
+
 
 // TODO: Implement sorting video files by folders with class names
 // TODO: Add an option for custom output path, not TestDirectory only
 // TODO: Implement functionality for bringing Windows application window on top
 
-namespace NunitVideoRecorder
+namespace NunitVideoRecorder.Internal
 {
     class Recorder
     {

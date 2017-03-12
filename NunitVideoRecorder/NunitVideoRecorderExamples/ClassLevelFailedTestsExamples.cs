@@ -1,8 +1,7 @@
-﻿using NUnit.Framework;
-using NunitVideoRecorder.Attributes;
-using NunitVideoRecorder;
-using System;
+﻿using System;
 using System.Threading;
+using NUnit.Framework;
+using NunitVideoRecorder;
 
 namespace NunitVideoRecorderExamples
 {

@@ -1,12 +1,13 @@
-﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using NUnit.Framework.Interfaces;
-using System.Reflection;
+﻿using System;
 using System.IO;
+using System.Reflection;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using NUnit.Framework;
+using NUnit.Framework.Interfaces;
+using NunitVideoRecorder.Internal;
 
-namespace NunitVideoRecorder.Attributes
+namespace NunitVideoRecorder
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class WatchDogAttribute : NUnitAttribute, ITestAction
@@ -109,7 +110,7 @@ namespace NunitVideoRecorder.Attributes
             }
             catch (IOException iox)
             {
-                Console.WriteLine(iox.Message);
+                Console.WriteLine(iox.Message);                
             }
         }
     }

@@ -51,15 +51,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attributes\VideoAttribute.cs" />
-    <Compile Include="Attributes\WatchDogAttribute.cs" />
-    <Compile Include="SaveInClass.cs" />
-    <Compile Include="SaveMe.cs" />
+    <Compile Include="VideoAttribute.cs" />
+    <Compile Include="WatchDogAttribute.cs" />
+    <Compile Include="Internal\Enums\SaveInClass.cs" />
+    <Compile Include="Internal\Enums\SaveMe.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Providers\EncoderProvider.cs" />
-    <Compile Include="Recorder.cs" />
-    <Compile Include="VideoConfigurator.cs" />
-    <Compile Include="VideoQuality.cs" />
+    <Compile Include="Internal\Providers\EncoderProvider.cs" />
+    <Compile Include="Internal\Recorder.cs" />
+    <Compile Include="Internal\VideoConfigurator.cs" />
+    <Compile Include="Internal\Enums\VideoQuality.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

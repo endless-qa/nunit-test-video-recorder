@@ -1,6 +1,6 @@
 ﻿using SharpAvi.Codecs;
 
-namespace NunitVideoRecorder.Providers
+namespace NunitVideoRecorder.Internal
 {
     class EncoderProvider
     {
