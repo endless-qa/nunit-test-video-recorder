@@ -1,4 +1,9 @@
-## Welcome to GitHub Pages
+## Nunit Video Recorder 
+
+A light-weight library designed for recording video from the screen during running Nunit-based tests.
+
+
+
 
 You can use the [editor on GitHub](https://github.com/endless-qa/testing/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
 
