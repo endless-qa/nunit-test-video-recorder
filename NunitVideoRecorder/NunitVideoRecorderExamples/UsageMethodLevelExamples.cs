@@ -5,19 +5,19 @@ using NunitVideoRecorder;
 namespace NunitVideoRecorderExamples
 {
     [TestFixture]
-    public class MethodLevelExamples
+    public class UsageMethodLevelExamples
     {
         [Video]
         [Test]
-        public void DefaultName_MethodLevel()
+        public void DefaultNamedTest()
         {
             Thread.Sleep(10000);
             Assert.Pass("I passed and was recorded because it's enabled by default.");
         }
 
-        [Video(Name = "SuspiciousTest")]
+        [Video(Name = "MyFavouriteTest")]
         [Test]
-        public void CustomName_MethodLevel()
+        public void CustomNamedTest()
         {
             Thread.Sleep(10000);
             Assert.Fail("I failed and was recorded because it's enabled by default.");
@@ -25,17 +25,24 @@ namespace NunitVideoRecorderExamples
 
         [Video(Mode = SaveMe.OnlyWhenFailed)]
         [Test]
-        public void DefaultName_Pass_MethodLevel()
+        public void DefaultNamedOnlyWhenFailsTest()
         {
             Thread.Sleep(10000);
             Assert.Pass("I passed and I wasn't recorded because it doesn't make sense for now...");
         }
 
         [Test, Video(Name = "CheckNegativeBehaviour", Mode = SaveMe.OnlyWhenFailed)]
-        public void DefaultName_Fail_MethodLevel()
+        public void CustomNamedOnlyWhenFailsTest()
         {
             Thread.Sleep(10000);
             Assert.Fail("I failed and that's why I am recorded!");
+        }
+
+        [Test, Video(Name = " I?m*p<>o||rta:n/tTe.st ", Mode = SaveMe.Always)]
+        public void IllegalSymbolsNamedTest()
+        {
+            Thread.Sleep(10000);
+            Assert.Pass("I passed and I was recorded with a new fixed name!");
         }
     }
 }
