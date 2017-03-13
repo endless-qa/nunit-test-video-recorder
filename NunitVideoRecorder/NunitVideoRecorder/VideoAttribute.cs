@@ -17,13 +17,14 @@ namespace NunitVideoRecorder
 
         public VideoAttribute() { }
 
-        public ActionTargets Targets => ActionTargets.Test;
+        public ActionTargets Targets { get; } = ActionTargets.Test;
 
         public void BeforeTest(ITest test)
         {
             SetVideoSavingMode(Mode);
-            var testName = string.IsNullOrWhiteSpace(Name) ? test.Name : Name.Trim();
-            _recording = RecorderFactory.Instance.Create(testName);
+
+            var videoName = string.IsNullOrWhiteSpace(Name) ? test.Name : Name.Trim();
+            _recording = RecorderFactory.Instance.Create(videoName);
             _recording.Start();            
         }
 
@@ -31,11 +32,10 @@ namespace NunitVideoRecorder
         {
             _recording?.Stop();
 
-            if (_saveFailedOnly
-                && Equals(TestContext.CurrentContext.Result.Outcome, ResultState.Success))
-                {
-                    DeleteRelatedVideo();
-                }
+            if (_saveFailedOnly && Equals(TestContext.CurrentContext.Result.Outcome, ResultState.Success))
+            {
+                DeleteRelatedVideo();
+            }
         }
 
         private void SetVideoSavingMode(SaveMe mode)

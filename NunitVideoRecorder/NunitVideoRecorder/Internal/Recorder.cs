@@ -7,9 +7,7 @@ using System.Threading.Tasks;
 using SharpAvi.Codecs;
 using SharpAvi.Output;
 
-
-// TODO: Implement sorting video files by folders with class names
-// TODO: Add an option for custom output path, not TestDirectory only
+// TODO: (POSTPONED) Add an option for custom output path, not TestDirectory only
 // TODO: Implement functionality for bringing Windows application window on top
 
 namespace NunitVideoRecorder.Internal

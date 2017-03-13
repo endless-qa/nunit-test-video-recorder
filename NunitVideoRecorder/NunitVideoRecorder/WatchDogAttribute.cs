@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Collections.Generic;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
@@ -11,10 +10,10 @@ namespace NunitVideoRecorder
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class WatchDogAttribute : NUnitAttribute, ITestAction
-    {
-        private Recorder recording;
+    {        
         private const string WANTED_ATTRIBUTE = "VideoAttribute";
-        private bool saveFailedOnly;
+        private Recorder _recording;
+        private bool _saveFailedOnly;
 
         public WatchDogAttribute(SaveInClass mode)
         {
@@ -27,8 +26,8 @@ namespace NunitVideoRecorder
         {
             if (!IsVideoAttributeAppliedToTest(test))
             {
-                recording = RecorderFactory.Instance.Create(test.Name);
-                recording.Start();
+                _recording = RecorderFactory.Instance.Create(test.Name);
+                _recording.Start();
             }
         }
 
@@ -36,19 +35,19 @@ namespace NunitVideoRecorder
         {
             if (!IsVideoAttributeAppliedToTest(test))
             {
-                recording.Stop();
+                _recording?.Stop();
 
-                if (saveFailedOnly &&
-                    Equals(TestContext.CurrentContext.Result.Outcome, ResultState.Success))
-                    {
-                        DeleteRelatedVideo();
-                    }
+                if (_saveFailedOnly && Equals(TestContext.CurrentContext.Result.Outcome, ResultState.Success))
+                {
+                    DeleteRelatedVideo();
+                }
             }      
         }
 
         private bool IsVideoAttributeAppliedToTest(ITest test)
         {
             var testAttributesSet = test.Method.MethodInfo.CustomAttributes;
+
             return FindEntry(testAttributesSet, WANTED_ATTRIBUTE);
         }
 
@@ -72,12 +71,12 @@ namespace NunitVideoRecorder
             {
                 case SaveInClass.AllTests:
                 {
-                    saveFailedOnly = false;
+                    _saveFailedOnly = false;
                     break;
                 }
                 case SaveInClass.FailedTestsOnly:
                 {
-                    saveFailedOnly = true;
+                    _saveFailedOnly = true;
                     break;
                 }
                 default: throw new ArgumentException("Saving mode is not valid!");
@@ -88,7 +87,7 @@ namespace NunitVideoRecorder
         {
             try
             {
-                File.Delete(recording.OutputFilePath);
+                File.Delete(_recording.OutputFilePath);
             }
             catch (IOException iox)
             {
