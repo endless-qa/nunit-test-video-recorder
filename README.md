@@ -9,11 +9,14 @@ A simple .NET library for Windows designed for recording video from the screen d
 * [Known limitations](#known-limitations)
 
 ## Downloads
-- [x] This is a complete item
-- [ ] This is an incomplete item
 
 ## Documentation
 
 ## License
 
 ## Known limitations
+- No support for video recording of Nunit tests marked with [Repeat], [Retry], [Combinatorial] or any other attributes that manage to run a single test multiple times;
+- No Selenium Grid support;
+- No multi-display support.
+
+All the above-mentioned is under investigation and may be implemented in future releases.
