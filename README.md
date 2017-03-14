@@ -13,6 +13,7 @@ A simple .NET library for Windows designed for recording video from the screen d
 ## Documentation
 
 ## License
+Nunit Test Video Recorder is distributed under the [MIT license](https://github.com/endless-qa/nunit-test-video-recorder/wiki/License).
 
 ## Known limitations
 - No support for video recording of Nunit tests marked with [Repeat], [Retry], [Combinatorial] or any other attributes that manage to run a single test multiple times;
