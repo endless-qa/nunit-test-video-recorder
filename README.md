@@ -4,9 +4,9 @@ A simple .NET library for Windows designed for recording video from the screen d
 
 ## Table of contents
 * [Downloads](#downloads)
-* Documentation
-* License
-* Known limitations
+* [Documentation](#documentation)
+* [License](#license)
+* [Known limitations](#known-limitations)
 
 ## Downloads
 - [x] This is a complete item
