@@ -9,6 +9,8 @@ A simple .NET library for Windows designed for recording video from the screen d
 * [Known limitations](#known-limitations)
 
 ## Downloads
+The latest veriosn of the Nunit Video Recorder is [available on NuGet](https://www.nuget.org/packages/Nunit.Video.Recorder/).
+
 
 ## Documentation
 
