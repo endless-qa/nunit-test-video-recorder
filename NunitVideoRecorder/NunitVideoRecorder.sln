@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NunitVideoRecorder", "Nunit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NunitVideoRecorderExamples", "NunitVideoRecorderExamples\NunitVideoRecorderExamples.csproj", "{5C16C8CA-165C-427C-B87E-1FF109BADCA4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NunitVideoRecorder.Tests", "NunitVideoRecorder.Tests\NunitVideoRecorder.Tests.csproj", "{1A2A0E77-C92F-4B9F-A6FF-3AC15AC68B39}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{5C16C8CA-165C-427C-B87E-1FF109BADCA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C16C8CA-165C-427C-B87E-1FF109BADCA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C16C8CA-165C-427C-B87E-1FF109BADCA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A2A0E77-C92F-4B9F-A6FF-3AC15AC68B39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A2A0E77-C92F-4B9F-A6FF-3AC15AC68B39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A2A0E77-C92F-4B9F-A6FF-3AC15AC68B39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A2A0E77-C92F-4B9F-A6FF-3AC15AC68B39}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Nunit.Video.Recorder</id>
+    <version>1.0</version>
+    <title>Nunit Video Recorder</title>
+    <authors>Viktor Samusenko</authors>
+    <owners>Viktor Samusenko</owners>
+    <licenseUrl>https://github.com/endless-qa/nunit-test-video-recorder/wiki/License</licenseUrl>
+    <projectUrl>https://github.com/endless-qa/nunit-test-video-recorder</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A simple .NET library for Windows based on the SharpAvi library and designed for recording video from the screen during Nunit test runs.</description>
+    <releaseNotes>This version represents the basic functionality for managing and recording video for Nunit test.</releaseNotes>
+    <copyright>Copyright 2017</copyright>
+    <tags>nunit test video recording</tags>
+  </metadata>
+</package>

@@ -6,7 +6,7 @@ using NunitVideoRecorder;
 namespace NunitVideoRecorderExamples
 {
     [TestFixture, WatchDog(SaveInClass.AllTests)]
-    class UsageAllClassLevelExamples
+    public class UsageAllClassLevelExamples
     {
         [Test]
         public void AlwaysFailedRecordedTest()
