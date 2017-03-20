@@ -2,3 +2,7 @@ language: csharp
 solution: "./NunitVideoRecorder/NunitVideoRecorder.sln"
 install:
   - nuget restore "./NunitVideoRecorder/NunitVideoRecorder.sln"
+  - nuget install NUnit.Runners -Version 3.6.1 -OutputDirectory testrunner
+script:
+  - xbuild /p:Configuration=Release "./NunitVideoRecorder/NunitVideoRecorder.sln"
+  - mono ./testrunner/NUnit.Runners.3.6.1/tools/nunit-console.exe "./NunitVideoRecorder/NunitVideoRecorder.Tests/bin/Release/NunitVideoRecorder.Tests.dll"
