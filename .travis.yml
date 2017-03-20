@@ -1,9 +1,0 @@
-language: csharp
-script:
-  - xbuild /p:Configuration=Release "./NunitVideoRecorder/NunitVideoRecorder.sln"
-before_install:
-  - sudo apt-get install nunit-console
-before_script:
-  - nuget restore "./NunitVideoRecorder/NunitVideoRecorder.sln"
-after_script:
-  - nunit3-console "./NunitVideoRecorder/NunitVideoRecorder.Tests/bin/Release/NunitVideoRecorder.Tests.dll"
