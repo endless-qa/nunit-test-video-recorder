@@ -1,0 +1,4 @@
+language: csharp
+solution: "./NunitVideoRecorder/NunitVideoRecorder.sln"
+install:
+  - nuget restore "./NunitVideoRecorder/NunitVideoRecorder.sln"
