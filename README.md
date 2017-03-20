@@ -1,6 +1,6 @@
 ## NUnit Video Recorder 
 
-[![Build Status](https://travis-ci.org/endless-qa/nunit-test-video-recorder.svg?branch=master)](https://travis-ci.org/endless-qa/nunit-test-video-recorder)
+[![Build status](https://ci.appveyor.com/api/projects/status/103797a9fhfkaj73?svg=true)](https://ci.appveyor.com/project/endlessqa/nunit-test-video-recorder)
 
 A simple .NET library for Windows designed for recording video from the screen during NUnit test runs. It's based on the [SharpAvi](https://github.com/baSSiLL/SharpAvi) library and inspired by the [Video Recorder Java](https://github.com/SergeyPirogov/video-recorder-java).
 
