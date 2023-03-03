@@ -1,3 +1,6 @@
+**Attention!
+I do not maintain this project anymore due to the changed priorities and differenttechnical stack. Feel free to fork it and make your own local adjustments if needed**
+
 ## NUnit Video Recorder 
 
 [![Build status](https://ci.appveyor.com/api/projects/status/103797a9fhfkaj73?svg=true)](https://ci.appveyor.com/project/endlessqa/nunit-test-video-recorder)
